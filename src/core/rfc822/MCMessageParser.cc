@@ -103,6 +103,15 @@ String * MessageParser::description()
     return result;
 }
 
+HashMap * MessageParser::serializable()
+{
+    HashMap * result = AbstractMessage::serializable();
+    if (mMainPart != NULL) {
+        result->setObjectForKey(MCSTR("mainPart"), mMainPart->serializable());
+    }
+    return result;
+}
+
 Object * MessageParser::copy()
 {
     return new MessageParser(this);
@@ -143,14 +152,7 @@ String * MessageParser::plainTextBodyRendering(bool stripWhitespace)
     String * plainTextBodyString = html->flattenHTML();
     
     if (stripWhitespace) {
-        plainTextBodyString->replaceOccurrencesOfString(MCSTR("\t"), MCSTR(" "));
-        plainTextBodyString->replaceOccurrencesOfString(MCSTR("\n"), MCSTR(" "));
-        plainTextBodyString->replaceOccurrencesOfString(MCSTR("\v"), MCSTR(" "));
-        plainTextBodyString->replaceOccurrencesOfString(MCSTR("\f"), MCSTR(" "));
-        plainTextBodyString->replaceOccurrencesOfString(MCSTR("\r"), MCSTR(" "));
-        while (plainTextBodyString->replaceOccurrencesOfString(MCSTR("  "), MCSTR(" "))) {
-            // do nothing.
-        }
+        plainTextBodyString = plainTextBodyString->stripWhitespace();
     }
     return plainTextBodyString;
 }
