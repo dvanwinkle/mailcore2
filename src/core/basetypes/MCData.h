@@ -2,8 +2,14 @@
 
 #define MAILCORE_MCDATA_H
 
+#include <stdlib.h>
+
 #include <MailCore/MCObject.h>
 #include <MailCore/MCMessageConstants.h>
+
+#ifdef __APPLE__
+#import <CoreFoundation/CoreFoundation.h>
+#endif
 
 #ifdef __cplusplus
 
@@ -11,7 +17,7 @@ namespace mailcore {
     
     class String;
     
-    class Data : public Object {
+    class MAILCORE_EXPORT Data : public Object {
     public:
         Data();
         Data(int capacity);
@@ -38,9 +44,14 @@ namespace mailcore {
         virtual Data * decodedDataUsingEncoding(Encoding encoding);
         
         virtual String * base64String();
+
+        virtual ErrorCode writeToFile(String * filename);
         
     public: // private
         virtual String * charsetWithFilteredHTML(bool filterHTML, String * hintCharset = NULL);
+#ifdef __APPLE__
+        virtual CFDataRef destructiveNSData();
+#endif
         
     public: // subclass behavior
         Data(Data * otherData);
@@ -55,9 +66,10 @@ namespace mailcore {
         char * mBytes;
         unsigned int mLength;
         unsigned int mAllocated;
-        void allocate(unsigned int length);
+        void allocate(unsigned int length, bool force = false);
         void reset();
         String * charsetWithFilteredHTMLWithoutHint(bool filterHTML);
+        void takeBytesOwnership(char * bytes, unsigned int length);
         
     };
 

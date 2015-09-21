@@ -13,7 +13,6 @@
 
 #import "MCOHTMLRendererDelegate.h"
 #import "NSObject+MCO.h"
-#import "MCOAbstractMessage+Private.h"
 #import "MCOUtils.h"
 #import "MCOAbstractMessageRendererCallback.h"
 
@@ -39,7 +38,7 @@
 
 - (id) initWithData:(NSData *)data
 {
-    mailcore::MessageParser * message = new mailcore::MessageParser([data mco_mcData]);
+    mailcore::MessageParser * message = new mailcore::MessageParser((CFDataRef) data);
     self = [super initWithMCMessage:message];
     MC_SAFE_RELEASE(message);
     return self;
